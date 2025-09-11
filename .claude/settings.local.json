@@ -18,7 +18,11 @@
       "Bash(git push:*)",
       "Bash(git fetch:*)",
       "Bash(git pull:*)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(git commit:*)",
+      "Bash(npm install:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ],
     "deny": [],
     "ask": []
