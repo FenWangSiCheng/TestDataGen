@@ -1,0 +1,28 @@
+# 忽略临时文件和测试文件
+*.log
+*.tmp
+*~
+.DS_Store
+Thumbs.db
+
+# 忽略测试文件
+test-emoji.html
+emoji-test-simple.html
+
+# 忽略node_modules（如果有的话）
+node_modules/
+
+# 忽略编辑器配置
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 忽略系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

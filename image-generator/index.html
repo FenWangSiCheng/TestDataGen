@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片数据生成工具 - ImageGen</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🖼️ 图片数据生成工具</h1>
+            <p>快速生成各种格式、尺寸和颜色的图片数据</p>
+            <div class="nav-links">
+                <a href="../text-generator/index.html" class="nav-link">🔤 文本生成工具</a>
+                <a href="../csv-generator/index.html" class="nav-link">📊 CSV生成工具</a>
+                <a href="../index.html" class="nav-link">🏠 返回首页</a>
+            </div>
+        </header>
+
+        <main class="main">
+            <!-- 参数设置区域 -->
+            <section class="config-section">
+                <h2>参数设置</h2>
+                <div class="config-grid">
+                    <!-- 图片格式选择 -->
+                    <div class="input-group">
+                        <label for="imageFormat">图片格式:</label>
+                        <select id="imageFormat" class="format-select">
+                            <option value="png">PNG</option>
+                            <option value="jpeg">JPEG</option>
+                            <option value="webp">WebP</option>
+                            <option value="bmp">BMP</option>
+                        </select>
+                    </div>
+
+                    <!-- 图片质量 (仅对JPEG有效) -->
+                    <div class="input-group" id="qualityGroup" style="display: none;">
+                        <label for="imageQuality">图片质量:</label>
+                        <input type="range" id="imageQuality" min="0.1" max="1" step="0.1" value="0.9" class="quality-slider">
+                        <span id="qualityValue">90%</span>
+                    </div>
+                </div>
+
+                <!-- 尺寸设置 -->
+                <div class="size-section">
+                    <h3>图片尺寸:</h3>
+                    <div class="size-controls">
+                        <div class="size-inputs">
+                            <div class="input-group">
+                                <label for="imageWidth">宽度:</label>
+                                <input type="number" id="imageWidth" min="1" max="8192" value="800" placeholder="像素">
+                                <span class="unit">px</span>
+                            </div>
+                            <div class="input-group">
+                                <label for="imageHeight">高度:</label>
+                                <input type="number" id="imageHeight" min="1" max="8192" value="600" placeholder="像素">
+                                <span class="unit">px</span>
+                            </div>
+                        </div>
+                        <div class="size-presets">
+                            <h4>常用尺寸:</h4>
+                            <div class="preset-buttons">
+                                <button type="button" class="btn-preset" data-width="800" data-height="600">800×600</button>
+                                <button type="button" class="btn-preset" data-width="1024" data-height="768">1024×768</button>
+                                <button type="button" class="btn-preset" data-width="1280" data-height="720">1280×720</button>
+                                <button type="button" class="btn-preset" data-width="1920" data-height="1080">1920×1080</button>
+                                <button type="button" class="btn-preset" data-width="500" data-height="500">500×500</button>
+                                <button type="button" class="btn-preset" data-width="1024" data-height="1024">1024×1024</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 颜色设置 -->
+                <div class="color-section">
+                    <h3>颜色设置:</h3>
+                    <div class="color-controls">
+                        <!-- 图案类型选择 -->
+                        <div class="pattern-selection">
+                            <label>图案类型:</label>
+                            <div class="pattern-buttons">
+                                <button type="button" class="btn-pattern active" data-pattern="solid">纯色</button>
+                                <button type="button" class="btn-pattern" data-pattern="linear">线性渐变</button>
+                                <button type="button" class="btn-pattern" data-pattern="radial">径向渐变</button>
+                                <button type="button" class="btn-pattern" data-pattern="noise">随机噪点</button>
+                                <button type="button" class="btn-pattern" data-pattern="stripes">条纹图案</button>
+                            </div>
+                        </div>
+
+                        <!-- 纯色设置 -->
+                        <div class="color-panel" id="solidColorPanel">
+                            <div class="color-input-group">
+                                <label for="colorPicker">选择颜色:</label>
+                                <div class="color-picker-container">
+                                    <input type="color" id="colorPicker" value="#4f46e5">
+                                    <div class="rgb-inputs">
+                                        <div class="rgb-input">
+                                            <label>R:</label>
+                                            <input type="number" id="redValue" min="0" max="255" value="79">
+                                        </div>
+                                        <div class="rgb-input">
+                                            <label>G:</label>
+                                            <input type="number" id="greenValue" min="0" max="255" value="70">
+                                        </div>
+                                        <div class="rgb-input">
+                                            <label>B:</label>
+                                            <input type="number" id="blueValue" min="0" max="255" value="229">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="color-presets">
+                                <h4>预设颜色:</h4>
+                                <div class="preset-colors">
+                                    <div class="color-preset" data-color="#ff0000" style="background-color: #ff0000;" title="红色"></div>
+                                    <div class="color-preset" data-color="#00ff00" style="background-color: #00ff00;" title="绿色"></div>
+                                    <div class="color-preset" data-color="#0000ff" style="background-color: #0000ff;" title="蓝色"></div>
+                                    <div class="color-preset" data-color="#ffff00" style="background-color: #ffff00;" title="黄色"></div>
+                                    <div class="color-preset" data-color="#ff00ff" style="background-color: #ff00ff;" title="品红"></div>
+                                    <div class="color-preset" data-color="#00ffff" style="background-color: #00ffff;" title="青色"></div>
+                                    <div class="color-preset" data-color="#ffffff" style="background-color: #ffffff;" title="白色"></div>
+                                    <div class="color-preset" data-color="#000000" style="background-color: #000000;" title="黑色"></div>
+                                    <div class="color-preset" data-color="#808080" style="background-color: #808080;" title="灰色"></div>
+                                    <div class="color-preset" data-color="#ffa500" style="background-color: #ffa500;" title="橙色"></div>
+                                    <div class="color-preset" data-color="#800080" style="background-color: #800080;" title="紫色"></div>
+                                    <div class="color-preset" data-color="#a52a2a" style="background-color: #a52a2a;" title="棕色"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 渐变设置 -->
+                        <div class="color-panel" id="gradientColorPanel" style="display: none;">
+                            <div class="gradient-controls">
+                                <div class="gradient-colors">
+                                    <div class="gradient-color">
+                                        <label>起始颜色:</label>
+                                        <input type="color" id="gradientColor1" value="#4f46e5">
+                                    </div>
+                                    <div class="gradient-color">
+                                        <label>结束颜色:</label>
+                                        <input type="color" id="gradientColor2" value="#7c3aed">
+                                    </div>
+                                </div>
+                                <div class="gradient-direction" id="linearDirection" style="display: none;">
+                                    <label for="gradientAngle">渐变角度:</label>
+                                    <input type="range" id="gradientAngle" min="0" max="360" value="45" class="angle-slider">
+                                    <span id="angleValue">45°</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 噪点设置 -->
+                        <div class="color-panel" id="noiseColorPanel" style="display: none;">
+                            <div class="noise-controls">
+                                <div class="input-group">
+                                    <label for="noiseIntensity">噪点强度:</label>
+                                    <input type="range" id="noiseIntensity" min="0.1" max="1" step="0.1" value="0.5" class="intensity-slider">
+                                    <span id="noiseValue">50%</span>
+                                </div>
+                                <div class="noise-colors">
+                                    <div class="gradient-color">
+                                        <label>基础颜色:</label>
+                                        <input type="color" id="noiseBaseColor" value="#4f46e5">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 条纹设置 -->
+                        <div class="color-panel" id="stripesColorPanel" style="display: none;">
+                            <div class="stripes-controls">
+                                <div class="input-group">
+                                    <label for="stripeWidth">条纹宽度:</label>
+                                    <input type="number" id="stripeWidth" min="1" max="100" value="20">
+                                    <span class="unit">px</span>
+                                </div>
+                                <div class="stripes-colors">
+                                    <div class="gradient-color">
+                                        <label>颜色1:</label>
+                                        <input type="color" id="stripeColor1" value="#4f46e5">
+                                    </div>
+                                    <div class="gradient-color">
+                                        <label>颜色2:</label>
+                                        <input type="color" id="stripeColor2" value="#ffffff">
+                                    </div>
+                                </div>
+                                <div class="stripe-direction">
+                                    <label>条纹方向:</label>
+                                    <div class="direction-buttons">
+                                        <button type="button" class="btn-direction active" data-direction="horizontal">水平</button>
+                                        <button type="button" class="btn-direction" data-direction="vertical">垂直</button>
+                                        <button type="button" class="btn-direction" data-direction="diagonal">斜向</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 实时预览区域 -->
+            <section class="preview-section">
+                <h3>实时预览:</h3>
+                <div class="preview-container">
+                    <canvas id="previewCanvas" width="200" height="150"></canvas>
+                    <div class="preview-info">
+                        <span id="previewSize">尺寸: 200×150</span>
+                        <span id="previewFormat">格式: PNG</span>
+                        <span id="estimatedSize">预计大小: ~10KB</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 操作区域 -->
+            <section class="action-section">
+                <div class="action-buttons">
+                    <button type="button" id="generateBtn" class="btn-primary">🎨 生成图片</button>
+                    <button type="button" id="downloadBtn" class="btn-secondary" disabled>💾 下载图片</button>
+                    <button type="button" id="batchBtn" class="btn-secondary">📦 批量生成</button>
+                </div>
+            </section>
+
+            <!-- 批量生成配置 -->
+            <section class="batch-section" id="batchSection" style="display: none;">
+                <h3>批量生成设置</h3>
+                <div class="batch-config">
+                    <div class="input-group">
+                        <label for="batchCount">生成数量:</label>
+                        <input type="number" id="batchCount" min="1" max="100" value="5">
+                        <span class="unit">张</span>
+                    </div>
+                    <div class="batch-options">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="randomColors" checked>
+                            <span class="checkmark">✓</span>
+                            <span class="label-text">随机颜色</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="randomSizes">
+                            <span class="checkmark">✓</span>
+                            <span class="label-text">随机尺寸</span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 生成结果展示 -->
+            <section class="result-section" id="resultSection" style="display: none;">
+                <h3>生成结果</h3>
+                <div class="result-controls">
+                    <button type="button" id="downloadAllBtn" class="btn-export">📥 下载全部</button>
+                    <button type="button" id="clearResultsBtn" class="btn-secondary">🗑️ 清空结果</button>
+                </div>
+                <div id="resultContainer" class="result-container"></div>
+            </section>
+        </main>
+
+        <!-- 消息提示 -->
+        <div id="toast" class="toast"></div>
+    </div>
+
+    <!-- 脚本文件 -->
+    <script src="js/image-generator.js"></script>
+    <script src="js/image-ui.js"></script>
+</body>
+</html>

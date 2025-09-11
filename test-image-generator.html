@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片生成器功能测试</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section { 
+            background: white;
+            padding: 20px; 
+            margin: 20px 0; 
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result { 
+            margin: 10px 0; 
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        canvas { 
+            border: 1px solid #ddd; 
+            margin: 10px 0;
+            display: block;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>🖼️ 图片生成器功能测试</h1>
+    
+    <div class="test-section">
+        <h2>基础功能测试</h2>
+        <canvas id="testCanvas" width="300" height="200"></canvas>
+        <div>
+            <button onclick="testSolidColor()">测试纯色</button>
+            <button onclick="testLinearGradient()">测试线性渐变</button>
+            <button onclick="testRadialGradient()">测试径向渐变</button>
+            <button onclick="testNoise()">测试噪点</button>
+            <button onclick="testStripes()">测试条纹</button>
+        </div>
+        <div id="testResults"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>格式测试</h2>
+        <div>
+            <button onclick="testFormat('png')">测试PNG</button>
+            <button onclick="testFormat('jpeg')">测试JPEG</button>
+            <button onclick="testFormat('webp')">测试WebP</button>
+        </div>
+        <div id="formatResults"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>批量生成测试</h2>
+        <button onclick="testBatchGeneration()">测试批量生成</button>
+        <div id="batchResults"></div>
+    </div>
+
+    <script src="image-generator/js/image-generator.js"></script>
+    <script>
+        let generator;
+        
+        // 初始化生成器
+        function initGenerator() {
+            try {
+                generator = new ImageGenerator();
+                const canvas = document.getElementById('testCanvas');
+                generator.initCanvas(canvas);
+                addTestResult('初始化成功', 'success', 'testResults');
+                return true;
+            } catch (error) {
+                addTestResult('初始化失败: ' + error.message, 'error', 'testResults');
+                return false;
+            }
+        }
+
+        // 添加测试结果
+        function addTestResult(message, type, containerId) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.textContent = new Date().toLocaleTimeString() + ': ' + message;
+            container.appendChild(div);
+        }
+
+        // 测试纯色
+        async function testSolidColor() {
+            try {
+                const config = {
+                    width: 300,
+                    height: 200,
+                    format: 'png',
+                    pattern: 'solid',
+                    colors: { primary: '#ff6b6b' }
+                };
+                
+                const result = await generator.generateImage(config);
+                addTestResult('纯色生成成功 - 大小: ' + result.size, 'success', 'testResults');
+            } catch (error) {
+                addTestResult('纯色生成失败: ' + error.message, 'error', 'testResults');
+            }
+        }
+
+        // 测试线性渐变
+        async function testLinearGradient() {
+            try {
+                const config = {
+                    width: 300,
+                    height: 200,
+                    format: 'png',
+                    pattern: 'linear',
+                    colors: { primary: '#4ecdc4', secondary: '#44a08d' },
+                    options: { angle: 45 }
+                };
+                
+                const result = await generator.generateImage(config);
+                addTestResult('线性渐变生成成功 - 大小: ' + result.size, 'success', 'testResults');
+            } catch (error) {
+                addTestResult('线性渐变生成失败: ' + error.message, 'error', 'testResults');
+            }
+        }
+
+        // 测试径向渐变
+        async function testRadialGradient() {
+            try {
+                const config = {
+                    width: 300,
+                    height: 200,
+                    format: 'png',
+                    pattern: 'radial',
+                    colors: { primary: '#ffeaa7', secondary: '#fab1a0' }
+                };
+                
+                const result = await generator.generateImage(config);
+                addTestResult('径向渐变生成成功 - 大小: ' + result.size, 'success', 'testResults');
+            } catch (error) {
+                addTestResult('径向渐变生成失败: ' + error.message, 'error', 'testResults');
+            }
+        }
+
+        // 测试噪点
+        async function testNoise() {
+            try {
+                const config = {
+                    width: 300,
+                    height: 200,
+                    format: 'png',
+                    pattern: 'noise',
+                    colors: { primary: '#6c5ce7' },
+                    options: { intensity: 0.5 }
+                };
+                
+                const result = await generator.generateImage(config);
+                addTestResult('噪点生成成功 - 大小: ' + result.size, 'success', 'testResults');
+            } catch (error) {
+                addTestResult('噪点生成失败: ' + error.message, 'error', 'testResults');
+            }
+        }
+
+        // 测试条纹
+        async function testStripes() {
+            try {
+                const config = {
+                    width: 300,
+                    height: 200,
+                    format: 'png',
+                    pattern: 'stripes',
+                    colors: { primary: '#00b894', secondary: '#00cec9' },
+                    options: { stripeWidth: 20, direction: 'horizontal' }
+                };
+                
+                const result = await generator.generateImage(config);
+                addTestResult('条纹生成成功 - 大小: ' + result.size, 'success', 'testResults');
+            } catch (error) {
+                addTestResult('条纹生成失败: ' + error.message, 'error', 'testResults');
+            }
+        }
+
+        // 测试格式
+        async function testFormat(format) {
+            try {
+                const config = {
+                    width: 200,
+                    height: 150,
+                    format: format,
+                    pattern: 'solid',
+                    colors: { primary: '#e17055' },
+                    quality: 0.8
+                };
+                
+                const result = await generator.generateImage(config);
+                addTestResult(`${format.toUpperCase()} 格式生成成功 - 大小: ${result.size}`, 'success', 'formatResults');
+            } catch (error) {
+                addTestResult(`${format.toUpperCase()} 格式生成失败: ${error.message}`, 'error', 'formatResults');
+            }
+        }
+
+        // 测试批量生成
+        async function testBatchGeneration() {
+            try {
+                addTestResult('开始批量生成测试...', 'success', 'batchResults');
+                
+                const results = await generator.generateBatch(3, {
+                    randomColors: true,
+                    randomSizes: false
+                });
+                
+                const successCount = results.filter(r => !r.error).length;
+                addTestResult(`批量生成完成 - 成功: ${successCount}/3`, 'success', 'batchResults');
+                
+                results.forEach((result, index) => {
+                    if (result.error) {
+                        addTestResult(`第${index + 1}张失败: ${result.error}`, 'error', 'batchResults');
+                    } else {
+                        addTestResult(`第${index + 1}张成功 - 大小: ${result.size}`, 'success', 'batchResults');
+                    }
+                });
+                
+            } catch (error) {
+                addTestResult('批量生成失败: ' + error.message, 'error', 'batchResults');
+            }
+        }
+
+        // 页面加载时初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            if (initGenerator()) {
+                addTestResult('所有测试功能已准备就绪', 'success', 'testResults');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 数据生成工具集 - DataGen Suite</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary-color: #6b7280;
+            --success-color: #10b981;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+            --border-radius-lg: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .tool-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .tool-header {
+            padding: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary-color), #7c3aed);
+            color: white;
+        }
+
+        .tool-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .tool-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-subtitle {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .tool-content {
+            padding: 2rem;
+        }
+
+        .tool-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .tool-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .tool-features li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tool-features li::before {
+            content: "✓";
+            color: var(--success-color);
+            font-weight: bold;
+            width: 20px;
+            text-align: center;
+        }
+
+        .tool-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            transition: var(--transition);
+            justify-content: center;
+            width: 100%;
+        }
+
+        .tool-link:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            opacity: 0.8;
+            margin-top: 2rem;
+        }
+
+        .footer p {
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .tool-card {
+                margin: 0 10px;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tool-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .tool-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🤖 AI 数据生成工具集</h1>
+            <p>专业的数据生成解决方案，支持文本和图片数据批量生成</p>
+        </header>
+
+        <div class="tools-grid">
+            <!-- 文本生成工具 -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <span class="tool-icon">🔤</span>
+                    <h2 class="tool-title">文本数据生成器</h2>
+                    <p class="tool-subtitle">TextGen</p>
+                </div>
+                <div class="tool-content">
+                    <p class="tool-description">
+                        强大的文本数据生成工具，支持多种字符类型组合，包括数字、英文、日文、表情符号、邮箱格式和特殊字符。
+                    </p>
+                    <ul class="tool-features">
+                        <li>支持数字、英文、日文字符组合</li>
+                        <li>内置表情符号和特殊字符</li>
+                        <li>自定义邮箱格式生成</li>
+                        <li>批量生成，支持大数据量</li>
+                        <li>多种导出格式（TXT, CSV, JSON）</li>
+                        <li>实时预览和进度显示</li>
+                    </ul>
+                    <a href="text-generator/index.html" class="tool-link">
+                        <span>开始使用文本生成器</span>
+                        <span>→</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 图片生成工具 -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <span class="tool-icon">🖼️</span>
+                    <h2 class="tool-title">图片数据生成器</h2>
+                    <p class="tool-subtitle">ImageGen</p>
+                </div>
+                <div class="tool-content">
+                    <p class="tool-description">
+                        专业的图片生成工具，支持多种图片格式、自定义尺寸和丰富的颜色图案，适用于测试数据、设计素材等场景。
+                    </p>
+                    <ul class="tool-features">
+                        <li>支持 PNG, JPEG, WebP, BMP 格式</li>
+                        <li>自定义图片尺寸和质量</li>
+                        <li>丰富的颜色和图案选择</li>
+                        <li>渐变、噪点、条纹等特效</li>
+                        <li>批量生成多张图片</li>
+                        <li>实时预览和大小估算</li>
+                    </ul>
+                    <a href="image-generator/index.html" class="tool-link">
+                        <span>开始使用图片生成器</span>
+                        <span>→</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- CSV生成工具 -->
+            <div class="tool-card">
+                <div class="tool-header">
+                    <span class="tool-icon">📊</span>
+                    <h2 class="tool-title">CSV数据生成器</h2>
+                    <p class="tool-subtitle">CSVGen</p>
+                </div>
+                <div class="tool-content">
+                    <p class="tool-description">
+                        专业的CSV文件生成工具，支持自定义列格式和数据类型，提供丰富的预设模板和多种数据格式选项。
+                    </p>
+                    <ul class="tool-features">
+                        <li>19种数据类型（文本、数字、日期、邮箱等）</li>
+                        <li>自定义列名、长度和格式</li>
+                        <li>6个预设模板（用户、商品、订单等）</li>
+                        <li>支持多种编码和分隔符</li>
+                        <li>配置导入/导出功能</li>
+                        <li>实时预览和分页浏览</li>
+                    </ul>
+                    <a href="csv-generator/index.html" class="tool-link">
+                        <span>开始使用CSV生成器</span>
+                        <span>→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>✨ 高效、可靠的数据生成工具 | 支持批量操作和多格式导出</p>
+        </footer>
+    </div>
+</body>
+</html>

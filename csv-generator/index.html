@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV数据生成工具 - CSVGen</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📊 CSV数据生成工具</h1>
+            <p>自定义列格式和长度，快速生成CSV测试数据</p>
+            <div class="nav-links">
+                <a href="../text-generator/index.html" class="nav-link">🔤 文本生成工具</a>
+                <a href="../image-generator/index.html" class="nav-link">🖼️ 图片生成工具</a>
+                <a href="../index.html" class="nav-link">🏠 返回首页</a>
+            </div>
+        </header>
+
+        <main class="main">
+            <!-- 基础设置区域 -->
+            <section class="config-section">
+                <h2>基础设置</h2>
+                <div class="config-grid">
+                    <div class="input-group">
+                        <label for="rowCount">数据行数:</label>
+                        <input type="number" id="rowCount" min="1" max="1000000" value="100" placeholder="请输入行数">
+                        <span class="unit">行</span>
+                    </div>
+                    <div class="input-group">
+                        <label for="csvEncoding">文件编码:</label>
+                        <select id="csvEncoding" class="encoding-select">
+                            <option value="utf-8">UTF-8</option>
+                            <option value="gbk">GBK</option>
+                            <option value="utf-8-bom">UTF-8 with BOM</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="csvSeparator">分隔符:</label>
+                        <select id="csvSeparator" class="separator-select">
+                            <option value=",">逗号 (,)</option>
+                            <option value=";">分号 (;)</option>
+                            <option value="\t">制表符 (\t)</option>
+                            <option value="|">竖线 (|)</option>
+                        </select>
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="includeHeader" checked>
+                            <span class="checkmark">✓</span>
+                            <span class="label-text">包含表头</span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 列配置区域 -->
+            <section class="columns-section">
+                <div class="columns-header">
+                    <h2>列配置</h2>
+                    <div class="columns-actions">
+                        <button type="button" id="addColumnBtn" class="btn-primary">➕ 添加列</button>
+                        <button type="button" id="presetBtn" class="btn-secondary">📋 预设模板</button>
+                        <button type="button" id="importConfigBtn" class="btn-secondary">📂 导入配置</button>
+                        <button type="button" id="exportConfigBtn" class="btn-secondary">💾 导出配置</button>
+                    </div>
+                </div>
+
+                <!-- 预设模板面板 -->
+                <div class="preset-panel" id="presetPanel" style="display: none;">
+                    <h3>选择预设模板:</h3>
+                    <div class="preset-templates">
+                        <button class="preset-template" data-template="user">👤 用户信息</button>
+                        <button class="preset-template" data-template="product">🛒 商品数据</button>
+                        <button class="preset-template" data-template="order">📋 订单记录</button>
+                        <button class="preset-template" data-template="log">📝 日志数据</button>
+                        <button class="preset-template" data-template="financial">💰 财务数据</button>
+                        <button class="preset-template" data-template="sensor">📊 传感器数据</button>
+                    </div>
+                </div>
+
+                <!-- 列列表 -->
+                <div class="columns-list" id="columnsList">
+                    <!-- 动态生成的列配置将在这里显示 -->
+                </div>
+
+                <!-- 添加列按钮（当没有列时显示） -->
+                <div class="empty-columns" id="emptyColumns">
+                    <div class="empty-state">
+                        <span class="empty-icon">📊</span>
+                        <h3>还没有配置任何列</h3>
+                        <p>点击"添加列"按钮开始配置您的CSV数据结构</p>
+                        <button type="button" id="addFirstColumnBtn" class="btn-primary">➕ 添加第一列</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 预览区域 -->
+            <section class="preview-section" id="previewSection" style="display: none;">
+                <h3>数据预览 (前5行)</h3>
+                <div class="preview-controls">
+                    <button type="button" id="refreshPreviewBtn" class="btn-small">🔄 刷新预览</button>
+                    <span id="previewInfo" class="preview-info">共配置 0 列</span>
+                </div>
+                <div class="preview-container">
+                    <div id="previewContent" class="preview-content"></div>
+                </div>
+            </section>
+
+            <!-- 操作区域 -->
+            <section class="action-section" id="actionSection" style="display: none;">
+                <div class="action-buttons">
+                    <button type="button" id="generateBtn" class="btn-primary">📊 生成CSV数据</button>
+                    <button type="button" id="downloadBtn" class="btn-secondary" disabled>💾 下载CSV文件</button>
+                    <button type="button" id="previewFullBtn" class="btn-secondary" disabled>👀 预览完整数据</button>
+                </div>
+            </section>
+
+            <!-- 进度区域 -->
+            <section class="progress-section" id="progressSection" style="display: none;">
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
+                <div class="progress-text">
+                    <span id="progressStatus">生成中...</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+            </section>
+
+            <!-- 结果区域 -->
+            <section class="result-section" id="resultSection" style="display: none;">
+                <h3>生成完成</h3>
+                <div class="result-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">生成行数:</span>
+                        <span id="resultRows" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">列数:</span>
+                        <span id="resultColumns" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">文件大小:</span>
+                        <span id="resultSize" class="stat-value">0KB</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">生成时间:</span>
+                        <span id="resultTime" class="stat-value">0ms</span>
+                    </div>
+                </div>
+                <div class="result-actions">
+                    <button type="button" id="downloadResultBtn" class="btn-primary">💾 下载CSV文件</button>
+                    <button type="button" id="previewResultBtn" class="btn-secondary">👀 预览数据</button>
+                    <button type="button" id="regenerateBtn" class="btn-secondary">🔄 重新生成</button>
+                    <button type="button" id="clearResultBtn" class="btn-secondary">🗑️ 清空结果</button>
+                </div>
+            </section>
+
+            <!-- 数据预览弹窗 -->
+            <div class="modal" id="dataModal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>📊 CSV数据预览</h3>
+                        <button type="button" id="closeModalBtn" class="close-btn">✕</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="modal-controls">
+                            <div class="pagination-controls">
+                                <button type="button" id="prevPageBtn" class="btn-small" disabled>← 上一页</button>
+                                <span id="pageInfo">第 1 页，共 1 页</span>
+                                <button type="button" id="nextPageBtn" class="btn-small" disabled>下一页 →</button>
+                            </div>
+                            <div class="view-controls">
+                                <label for="pageSize">每页显示:</label>
+                                <select id="pageSize">
+                                    <option value="20">20行</option>
+                                    <option value="50" selected>50行</option>
+                                    <option value="100">100行</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="modalPreviewContent" class="modal-preview-content"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 消息提示 -->
+        <div id="toast" class="toast"></div>
+
+        <!-- 配置导入/导出的隐藏input -->
+        <input type="file" id="configFileInput" accept=".json" style="display: none;">
+    </div>
+
+    <!-- 脚本文件 -->
+    <script src="js/csv-generator.js"></script>
+    <script src="js/column-manager.js"></script>
+    <script src="js/csv-ui.js"></script>
+</body>
+</html>

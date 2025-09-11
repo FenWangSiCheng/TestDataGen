@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文本数据生成工具 - TextGen</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔤 文本数据生成工具</h1>
+            <p>快速生成多类型组合的测试文本数据</p>
+            <div class="nav-links">
+                <a href="../image-generator/index.html" class="nav-link">🖼️ 图片生成工具</a>
+                <a href="../csv-generator/index.html" class="nav-link">📊 CSV生成工具</a>
+                <a href="../index.html" class="nav-link">🏠 返回首页</a>
+            </div>
+        </header>
+
+        <main class="main">
+            <!-- 参数设置区域 -->
+            <section class="config-section">
+                <h2>参数设置</h2>
+                <div class="config-grid">
+                    <div class="input-group">
+                        <label for="count">数据个数:</label>
+                        <input type="number" id="count" min="1" max="1000000" value="100" placeholder="请输入数量">
+                        <span class="unit">条</span>
+                    </div>
+                    <div class="input-group">
+                        <label for="length">数据长度:</label>
+                        <input type="number" id="length" min="1" max="10000" value="50" placeholder="请输入长度">
+                        <span class="unit">字符</span>
+                    </div>
+                </div>
+
+                <!-- 字符类型选择 -->
+                <div class="type-selection">
+                    <h3>字符类型组合:</h3>
+                    <div class="checkbox-grid">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="numbers" value="numbers" checked>
+                            <span class="checkmark">✓</span>
+                            <span class="label-text">数字 (0-9)</span>
+                            <span class="sample">123456</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="english" value="english" checked>
+                            <span class="checkmark">✓</span>
+                            <span class="label-text">英文 (a-z, A-Z)</span>
+                            <span class="sample">AbCdEf</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="japanese" value="japanese">
+                            <span class="checkmark">✓</span>
+                            <span class="label-text">日文 (ひらがな・カタカナ・漢字)</span>
+                            <span class="sample">あいうアイウ一二三</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="emoticon" value="emoticon">
+                            <span class="checkmark">✓</span>
+                            <span class="label-text">文本表情</span>
+                            <span class="sample">:) ^_^ (づ｡◕‿◕｡)づ</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="emoji" value="emoji">
+                            <span class="checkmark">✓</span>
+                            <span class="label-text">Emoji表情</span>
+                            <span class="sample">😀😍🚀🎉🌟💖</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="email" value="email">
+                            <span class="checkmark">✓</span>
+                            <span class="label-text">邮箱格式</span>
+                            <span class="sample">abc123@gmail.com</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="special" value="special">
+                            <span class="checkmark">✓</span>
+                            <span class="label-text">特殊字符</span>
+                            <span class="sample">!@#$%^&*()</span>
+                        </label>
+                    </div>
+                    <div class="selection-controls">
+                        <button type="button" id="selectAll" class="btn-secondary">全选</button>
+                        <button type="button" id="selectNone" class="btn-secondary">全不选</button>
+                    </div>
+                </div>
+
+                <!-- 邮箱配置面板 -->
+                <div class="email-config-panel" id="emailConfigPanel" style="display: none;">
+                    <h4>📧 邮箱生成配置</h4>
+                    <div class="email-config-grid">
+                        <div class="config-item">
+                            <label for="emailDomain">固定域名:</label>
+                            <input type="text" id="emailDomain" value="@gmail.com" placeholder="@example.com">
+                            <span class="domain-hint">必须以@开头</span>
+                        </div>
+                        <div class="config-item">
+                            <label for="usernameLength">用户名长度:</label>
+                            <input type="number" id="usernameLength" min="3" max="30" value="8">
+                            <span class="length-hint">3-30字符</span>
+                        </div>
+                    </div>
+                    <div class="username-types">
+                        <label>用户名字符类型:</label>
+                        <div class="username-checkboxes">
+                            <label class="mini-checkbox">
+                                <input type="checkbox" id="usernameNumbers" value="numbers" checked>
+                                <span class="mini-checkmark">✓</span>
+                                <span>数字</span>
+                            </label>
+                            <label class="mini-checkbox">
+                                <input type="checkbox" id="usernameEnglish" value="english" checked>
+                                <span class="mini-checkmark">✓</span>
+                                <span>英文</span>
+                            </label>
+                            <label class="mini-checkbox">
+                                <input type="checkbox" id="usernameJapanese" value="japanese">
+                                <span class="mini-checkmark">✓</span>
+                                <span>日文</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="email-preview">
+                        <label>预览样例:</label>
+                        <div id="emailPreview" class="email-preview-content">abc123@gmail.com</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 操作区域 -->
+            <section class="action-section">
+                <div class="action-buttons">
+                    <button type="button" id="generateBtn" class="btn-primary">🎲 生成数据</button>
+                    <button type="button" id="regenerateBtn" class="btn-secondary" disabled>🔄 重新生成</button>
+                    <button type="button" id="clearBtn" class="btn-secondary" disabled>🗑️ 清空结果</button>
+                </div>
+            </section>
+
+            <!-- 预览区域 -->
+            <section class="preview-section" id="previewSection" style="display: none;">
+                <h3>预览 (前5条)</h3>
+                <div id="previewContent" class="preview-content"></div>
+                <div class="info-bar">
+                    <span id="charPoolInfo">字符池: </span>
+                    <span id="estimatedTime">预计时间: </span>
+                </div>
+            </section>
+
+            <!-- 进度区域 -->
+            <section class="progress-section" id="progressSection" style="display: none;">
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
+                <div class="progress-text">
+                    <span id="progressStatus">生成中...</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+            </section>
+
+            <!-- 导出区域 -->
+            <section class="export-section" id="exportSection" style="display: none;">
+                <h3>导出数据</h3>
+                <div class="export-buttons">
+                    <button type="button" id="copyBtn" class="btn-export">📋 复制到剪贴板</button>
+                    <button type="button" id="downloadTxtBtn" class="btn-export">📄 下载 TXT</button>
+                    <button type="button" id="downloadCsvBtn" class="btn-export">📊 下载 CSV</button>
+                    <button type="button" id="downloadJsonBtn" class="btn-export">📦 下载 JSON</button>
+                </div>
+                <div class="result-info">
+                    <span id="resultCount">已生成: 0 条数据</span>
+                    <span id="generateTime">用时: 0ms</span>
+                </div>
+            </section>
+
+            <!-- 结果显示区域 -->
+            <section class="result-section" id="resultSection" style="display: none;">
+                <h3>生成结果</h3>
+                <div class="result-controls">
+                    <input type="text" id="searchInput" placeholder="搜索结果..." class="search-input">
+                    <button type="button" id="expandBtn" class="btn-small">展开全部</button>
+                    <button type="button" id="collapseBtn" class="btn-small">收起</button>
+                </div>
+                <div id="resultContent" class="result-content"></div>
+            </section>
+        </main>
+
+        <!-- 消息提示 -->
+        <div id="toast" class="toast"></div>
+    </div>
+
+    <!-- 脚本文件 -->
+    <script src="js/generator.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

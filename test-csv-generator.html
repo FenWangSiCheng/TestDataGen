@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV生成器功能测试</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section { 
+            background: white;
+            padding: 20px; 
+            margin: 20px 0; 
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result { 
+            margin: 10px 0; 
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .test-data {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>📊 CSV生成器功能测试</h1>
+    
+    <div class="test-section">
+        <h2>数据类型测试</h2>
+        <div>
+            <button onclick="testDataType('text')">测试文本类型</button>
+            <button onclick="testDataType('number')">测试数字类型</button>
+            <button onclick="testDataType('integer')">测试整数类型</button>
+            <button onclick="testDataType('decimal')">测试小数类型</button>
+            <button onclick="testDataType('boolean')">测试布尔值类型</button>
+            <button onclick="testDataType('date')">测试日期类型</button>
+            <button onclick="testDataType('datetime')">测试日期时间类型</button>
+            <button onclick="testDataType('email')">测试邮箱类型</button>
+            <button onclick="testDataType('phone')">测试手机号类型</button>
+            <button onclick="testDataType('name')">测试姓名类型</button>
+            <button onclick="testDataType('id')">测试ID序号类型</button>
+            <button onclick="testDataType('enum')">测试枚举类型</button>
+            <button onclick="testDataType('uuid')">测试UUID类型</button>
+        </div>
+        <div id="dataTypeResults"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>预设模板测试</h2>
+        <div>
+            <button onclick="testTemplate('user')">用户信息模板</button>
+            <button onclick="testTemplate('product')">商品数据模板</button>
+            <button onclick="testTemplate('order')">订单记录模板</button>
+            <button onclick="testTemplate('log')">日志数据模板</button>
+            <button onclick="testTemplate('financial')">财务数据模板</button>
+            <button onclick="testTemplate('sensor')">传感器数据模板</button>
+        </div>
+        <div id="templateResults"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>CSV生成测试</h2>
+        <div>
+            <button onclick="testCSVGeneration()">生成小数据量CSV (10行)</button>
+            <button onclick="testLargeCSVGeneration()">生成大数据量CSV (1000行)</button>
+            <button onclick="testDifferentSeparators()">测试不同分隔符</button>
+            <button onclick="testDifferentEncodings()">测试不同编码</button>
+        </div>
+        <div id="csvResults"></div>
+    </div>
+
+    <script src="csv-generator/js/csv-generator.js"></script>
+    <script src="csv-generator/js/column-manager.js"></script>
+    <script>
+        let generator;
+        let columnManager;
+        
+        // 初始化
+        function initializeTest() {
+            try {
+                generator = new CSVGenerator();
+                columnManager = new ColumnManager(generator);
+                addTestResult('CSV生成器初始化成功', 'success', 'dataTypeResults');
+                return true;
+            } catch (error) {
+                addTestResult('初始化失败: ' + error.message, 'error', 'dataTypeResults');
+                return false;
+            }
+        }
+
+        // 添加测试结果
+        function addTestResult(message, type, containerId) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+            container.appendChild(div);
+        }
+
+        // 显示测试数据
+        function showTestData(data, containerId) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = 'test-data';
+            
+            if (Array.isArray(data)) {
+                div.textContent = data.slice(0, 5).join('\n') + (data.length > 5 ? `\n... (共${data.length}项)` : '');
+            } else {
+                div.textContent = JSON.stringify(data, null, 2);
+            }
+            
+            container.appendChild(div);
+        }
+
+        // 测试单个数据类型
+        async function testDataType(type) {
+            try {
+                const column = createTestColumn(type);
+                generator.setColumns([column]);
+                
+                const result = await generator.generateCSV(5);
+                const data = result.data;
+                
+                addTestResult(`${type}类型测试成功 - 生成${data.length}行数据`, 'success', 'dataTypeResults');
+                
+                // 显示生成的数据样本
+                const samples = data.map(row => row[column.name]);
+                showTestData(samples, 'dataTypeResults');
+                
+            } catch (error) {
+                addTestResult(`${type}类型测试失败: ${error.message}`, 'error', 'dataTypeResults');
+            }
+        }
+
+        // 创建测试列配置
+        function createTestColumn(type) {
+            const baseColumn = { name: `测试${type}`, type: type };
+            
+            switch (type) {
+                case 'text':
+                    return { ...baseColumn, length: 10, charset: 'mixed' };
+                case 'number':
+                case 'decimal':
+                    return { ...baseColumn, min: 1, max: 100, decimals: 2 };
+                case 'integer':
+                    return { ...baseColumn, min: 1, max: 100 };
+                case 'boolean':
+                    return { ...baseColumn, format: 'text', trueValue: '是', falseValue: '否' };
+                case 'date':
+                    return { ...baseColumn, format: 'YYYY-MM-DD', startDate: '2020-01-01' };
+                case 'datetime':
+                    return { ...baseColumn, format: 'YYYY-MM-DD HH:mm:ss' };
+                case 'email':
+                    return { ...baseColumn, domains: ['test.com', 'example.org'] };
+                case 'phone':
+                    return { ...baseColumn, format: 'china' };
+                case 'name':
+                    return { ...baseColumn, nameType: 'chinese' };
+                case 'id':
+                    return { ...baseColumn, start: 1001, prefix: 'ID', padding: 6 };
+                case 'enum':
+                    return { ...baseColumn, values: ['选项A', '选项B', '选项C'] };
+                default:
+                    return baseColumn;
+            }
+        }
+
+        // 测试预设模板
+        async function testTemplate(templateKey) {
+            try {
+                columnManager.applyTemplate(templateKey);
+                const columns = generator.getColumns();
+                
+                addTestResult(`${templateKey}模板应用成功 - 包含${columns.length}列`, 'success', 'templateResults');
+                
+                // 生成示例数据
+                const result = await generator.generateCSV(3);
+                addTestResult(`${templateKey}模板数据生成成功 - ${result.rowCount}行${result.columnCount}列`, 'success', 'templateResults');
+                
+                // 显示前3行数据
+                const sampleData = result.csvContent.split('\n').slice(0, 4).join('\n');
+                showTestData([sampleData], 'templateResults');
+                
+            } catch (error) {
+                addTestResult(`${templateKey}模板测试失败: ${error.message}`, 'error', 'templateResults');
+            }
+        }
+
+        // 测试CSV生成
+        async function testCSVGeneration() {
+            try {
+                // 创建简单的测试列配置
+                const columns = [
+                    { name: 'ID', type: 'id', start: 1 },
+                    { name: '姓名', type: 'name', nameType: 'chinese' },
+                    { name: '年龄', type: 'integer', min: 18, max: 65 },
+                    { name: '邮箱', type: 'email' }
+                ];
+                
+                generator.setColumns(columns);
+                
+                const startTime = Date.now();
+                const result = await generator.generateCSV(10);
+                const endTime = Date.now();
+                
+                addTestResult(`CSV生成成功 - ${result.rowCount}行${result.columnCount}列，用时${endTime - startTime}ms，大小${result.size}`, 'success', 'csvResults');
+                
+                // 显示CSV内容前几行
+                const lines = result.csvContent.split('\n').slice(0, 6);
+                showTestData([lines.join('\n')], 'csvResults');
+                
+            } catch (error) {
+                addTestResult(`CSV生成失败: ${error.message}`, 'error', 'csvResults');
+            }
+        }
+
+        // 测试大数据量生成
+        async function testLargeCSVGeneration() {
+            try {
+                const columns = [
+                    { name: 'ID', type: 'id', start: 1 },
+                    { name: '数据', type: 'text', length: 20 },
+                    { name: '时间', type: 'datetime', format: 'YYYY-MM-DD HH:mm:ss' }
+                ];
+                
+                generator.setColumns(columns);
+                
+                addTestResult('开始生成1000行数据...', 'info', 'csvResults');
+                
+                const startTime = Date.now();
+                const result = await generator.generateCSV(1000, {
+                    progressCallback: (progress, processed, total) => {
+                        if (progress % 20 === 0) { // 每20%显示一次
+                            addTestResult(`进度: ${progress}% (${processed}/${total})`, 'info', 'csvResults');
+                        }
+                    }
+                });
+                const endTime = Date.now();
+                
+                addTestResult(`大数据量CSV生成成功 - ${result.rowCount}行${result.columnCount}列，用时${endTime - startTime}ms，大小${result.size}`, 'success', 'csvResults');
+                
+            } catch (error) {
+                addTestResult(`大数据量CSV生成失败: ${error.message}`, 'error', 'csvResults');
+            }
+        }
+
+        // 测试不同分隔符
+        async function testDifferentSeparators() {
+            try {
+                const columns = [
+                    { name: 'A', type: 'text', length: 5 },
+                    { name: 'B', type: 'number', min: 1, max: 100 }
+                ];
+                
+                generator.setColumns(columns);
+                
+                const separators = [',', ';', '\t', '|'];
+                
+                for (const sep of separators) {
+                    const result = await generator.generateCSV(3, { separator: sep });
+                    const sepName = sep === '\t' ? 'Tab' : sep;
+                    addTestResult(`分隔符"${sepName}"测试成功 - 大小${result.size}`, 'success', 'csvResults');
+                    
+                    const preview = result.csvContent.split('\n').slice(0, 2).join('\n');
+                    showTestData([`分隔符: ${sepName}\n${preview}`], 'csvResults');
+                }
+                
+            } catch (error) {
+                addTestResult(`分隔符测试失败: ${error.message}`, 'error', 'csvResults');
+            }
+        }
+
+        // 测试不同编码
+        async function testDifferentEncodings() {
+            try {
+                const columns = [
+                    { name: '中文', type: 'text', length: 10, charset: 'chinese' },
+                    { name: '英文', type: 'text', length: 10, charset: 'latin' }
+                ];
+                
+                generator.setColumns(columns);
+                
+                const encodings = ['utf-8', 'utf-8-bom', 'gbk'];
+                
+                for (const encoding of encodings) {
+                    const result = await generator.generateCSV(2, { encoding: encoding });
+                    addTestResult(`编码"${encoding}"测试成功 - 大小${result.size}`, 'success', 'csvResults');
+                }
+                
+            } catch (error) {
+                addTestResult(`编码测试失败: ${error.message}`, 'error', 'csvResults');
+            }
+        }
+
+        // 页面加载时初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            if (initializeTest()) {
+                addTestResult('所有测试功能已准备就绪！点击按钮开始测试', 'info', 'dataTypeResults');
+            }
+        });
+    </script>
+</body>
+</html>

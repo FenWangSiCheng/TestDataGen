@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/wangsicheng/Desktop/**)",
+      "Bash(unzip:*)",
+      "Read(//tmp/xmind_extract/**)",
+      "WebSearch",
+      "Bash(curl:*)",
+      "Bash(chmod:*)",
+      "Bash(node test-csv.js)",
+      "Bash(node:*)",
+      "Bash(python3:*)",
+      "Bash(open image-generator/index.html)",
+      "Bash(open:*)",
+      "Bash(git init:*)",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
