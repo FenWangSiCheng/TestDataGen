@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: /sitemap.xml
+
+# 禁止抓取测试文件
+Disallow: /test-*
+Disallow: /*.html
+Allow: /index.html
+Allow: /text-generator/index.html  
+Allow: /image-generator/index.html
+Allow: /csv-generator/index.html

@@ -1,0 +1,19 @@
+# Netlify重定向文件
+# 确保所有工具页面都能正确访问
+
+# 主页重定向
+/home                /index.html           200
+/                    /index.html           200
+
+# 工具页面重定向（保持原路径）
+/text-generator      /text-generator/index.html      200
+/image-generator     /image-generator/index.html     200  
+/csv-generator       /csv-generator/index.html       200
+
+# 文件扩展名处理
+/text-generator/     /text-generator/index.html      200
+/image-generator/    /image-generator/index.html     200
+/csv-generator/      /csv-generator/index.html       200
+
+# SPA路由回退
+/*                   /index.html           404
