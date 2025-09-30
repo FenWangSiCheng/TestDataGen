@@ -4,7 +4,7 @@
 
 ## 🌐 在线体验
 
-**Live Demo**: [https://testdatagen.netlify.app](https://testdatagen.netlify.app)
+**Live Demo**: [https://sprightly-blini-80f4e3.netlify.app](https://sprightly-blini-80f4e3.netlify.app)
 
 ## ✨ 功能特性
 
@@ -29,7 +29,7 @@
 ## 🚀 快速开始
 
 ### 在线使用
-直接访问 [https://testdatagen.netlify.app](https://testdatagen.netlify.app) 即可使用所有功能
+直接访问 [https://sprightly-blini-80f4e3.netlify.app](https://sprightly-blini-80f4e3.netlify.app) 即可使用所有功能
 
 ### 本地运行
 ```bash
