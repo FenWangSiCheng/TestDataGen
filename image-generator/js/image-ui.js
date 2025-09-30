@@ -507,16 +507,69 @@ class ImageGeneratorUI {
     /**
      * 下载所有图片
      */
-    downloadAllImages() {
+    async downloadAllImages() {
         if (this.currentResults.length === 0) return;
-        
-        this.currentResults.forEach((result, index) => {
-            setTimeout(() => {
-                this.generator.downloadImage(result, `batch_image_${index + 1}.${result.config.format}`);
-            }, index * 500); // 延迟下载避免浏览器阻止
-        });
-        
-        this.showToast(`开始下载 ${this.currentResults.length} 张图片`, 'success');
+
+        // 检查 JSZip 是否可用
+        if (typeof JSZip === 'undefined') {
+            // 降级到逐张下载
+            this.currentResults.forEach((result, index) => {
+                setTimeout(() => {
+                    this.generator.downloadImage(result, `batch_image_${index + 1}.${result.config.format}`);
+                }, index * 500);
+            });
+            this.showToast(`开始下载 ${this.currentResults.length} 张图片`, 'success');
+            return;
+        }
+
+        try {
+            this.showToast('正在打包图片...', 'success', 5000);
+
+            // 创建 ZIP 文件
+            const zip = new JSZip();
+            const imgFolder = zip.folder('images');
+
+            // 将所有图片添加到 ZIP
+            for (let i = 0; i < this.currentResults.length; i++) {
+                const result = this.currentResults[i];
+                const filename = `image_${i + 1}_${result.config.width}x${result.config.height}.${result.config.format}`;
+
+                // 从 dataURL 提取 base64 数据
+                const base64Data = result.dataURL.split(',')[1];
+                imgFolder.file(filename, base64Data, { base64: true });
+            }
+
+            // 生成 ZIP 文件
+            const zipBlob = await zip.generateAsync({
+                type: 'blob',
+                compression: 'DEFLATE',
+                compressionOptions: { level: 6 }
+            });
+
+            // 触发下载
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(zipBlob);
+            link.download = `images_${Date.now()}.zip`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // 释放 URL 对象
+            setTimeout(() => URL.revokeObjectURL(link.href), 100);
+
+            this.showToast(`已打包 ${this.currentResults.length} 张图片为 ZIP 文件`, 'success');
+
+        } catch (error) {
+            console.error('打包下载失败:', error);
+            this.showToast(`打包失败: ${error.message}`, 'error');
+
+            // 降级到逐张下载
+            this.currentResults.forEach((result, index) => {
+                setTimeout(() => {
+                    this.generator.downloadImage(result, `batch_image_${index + 1}.${result.config.format}`);
+                }, index * 500);
+            });
+        }
     }
 
     /**
